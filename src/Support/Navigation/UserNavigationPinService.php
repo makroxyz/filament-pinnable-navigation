@@ -2,7 +2,6 @@
 
 namespace Devletes\FilamentPinnableNavigation\Support\Navigation;
 
-use Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 
@@ -18,7 +17,7 @@ class UserNavigationPinService
             return collect();
         }
 
-        return PinnableNavigationPin::query()
+        return $this->getModelClass()::query()
             ->where('user_type', $user->getMorphClass())
             ->where('user_id', $user->getAuthIdentifier())
             ->where('panel_id', $panelId)
@@ -34,7 +33,7 @@ class UserNavigationPinService
 
         $key = $this->normalizeKey($key);
 
-        return PinnableNavigationPin::query()
+        return $this->getModelClass()::query()
             ->where('user_type', $user->getMorphClass())
             ->where('user_id', $user->getAuthIdentifier())
             ->where('panel_id', $panelId)
@@ -50,7 +49,7 @@ class UserNavigationPinService
 
         $key = $this->normalizeKey($key);
 
-        PinnableNavigationPin::query()->firstOrCreate([
+        $this->getModelClass()::query()->firstOrCreate([
             'user_type' => $user->getMorphClass(),
             'user_id' => $user->getAuthIdentifier(),
             'panel_id' => $panelId,
@@ -66,7 +65,7 @@ class UserNavigationPinService
 
         $key = $this->normalizeKey($key);
 
-        PinnableNavigationPin::query()
+        $this->getModelClass()::query()
             ->where('user_type', $user->getMorphClass())
             ->where('user_id', $user->getAuthIdentifier())
             ->where('panel_id', $panelId)
@@ -106,5 +105,10 @@ class UserNavigationPinService
         }
 
         return $key;
+    }
+
+    protected function getModelClass(): string
+    {
+        return config('pinnable-navigation.model', \Devletes\FilamentPinnableNavigation\Models\PinnableNavigationPin::class);
     }
 }
